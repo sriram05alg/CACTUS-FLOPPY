@@ -120,12 +120,23 @@ function resetGame() {
   backgroundMusic.play();
 }
 
-// Controls
-window.addEventListener('keydown', function (event) {
-  if (event.key === ' ') {
+// Controls (For mobile and desktop)
+function controlBird(event) {
+  if (event.type === 'keydown' && event.key === ' ') {
+    velocity = lift;
+  } else if (event.type === 'touchstart') {
     velocity = lift;
   }
-});
+}
+
+// Add event listeners for both mobile and desktop
+window.addEventListener('keydown', controlBird); // For desktop (keyboard)
+window.addEventListener('touchstart', controlBird); // For mobile (touch)
+
+// Prevent default behavior on mobile (e.g., scrolling)
+window.addEventListener('touchstart', function(event) {
+  event.preventDefault();
+}, { passive: false });
 
 // Restart
 document.getElementById('restartBtn').addEventListener('click', () => {
@@ -300,22 +311,14 @@ function draw() {
   ctx.fillRect(10, 130, 250, 80);
   ctx.fillStyle = 'black';
   ctx.font = '20px Times New Roman';
-  ctx.fillText('Badge:', 30, 160);
-  ctx.font = '18px Times New Roman';
-  ctx.fillText(latestBadge, 30, 190);
+  ctx.fillText(`Badge: ${latestBadge}`, 30, 170);
 
-  // Funny comment display (outside box)
+  // Funny Comment Box
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+  ctx.fillRect(canvas.width / 2 - 150, 10, 300, 60);
   ctx.fillStyle = 'black';
-  ctx.font = '18px Times New Roman';
-  ctx.fillText(currentFunnyComment, canvas.width - 390, 80);
-
-  if (gameOver) {
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Times New Roman';
-    ctx.fillText('Game Over!', canvas.width / 2 - 150, canvas.height / 2);
-    ctx.font = '36px Times New Roman';
-    ctx.fillText(`High Score: ${highScore}`, canvas.width / 2 - 140, canvas.height / 2 + 50);
-  }
+  ctx.font = '16px Arial';
+  ctx.fillText(currentFunnyComment, canvas.width / 2 - 140, 40);
 }
 
 // Game loop
@@ -325,13 +328,7 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Resize
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  birdX = canvas.width / 3;
-});
-
 gameLoop();
+
 
 
