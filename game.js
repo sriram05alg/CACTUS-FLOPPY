@@ -133,11 +133,6 @@ window.addEventListener('keydown', function (event) {
 document.getElementById('restartBtn').addEventListener('click', () => {
   resetGame();
 });
-document.getElementById('restartBtn').addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  resetGame();
-});
-
 
 // Update game
 function update() {
@@ -329,35 +324,18 @@ function draw() {
   }
 }
 
-const startBtn = document.getElementById('startBtn');
-startBtn.addEventListener('click', startGame);
-startBtn.addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  startGame();
-});
-
-function startGame() {
-  // Hide the start button and reset game state, then enter the game loop
-  resetGame();
-  document.getElementById('startBtn').style.display = 'none';
-  gameLoop();
-}
-
-// **Game loop and resize handler**
+// Game loop
 function gameLoop() {
   update();
   draw();
   requestAnimationFrame(gameLoop);
 }
 
-// Resize handler (keeps canvas full-screen)
+// Resize
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   birdX = canvas.width / 3;
 });
 
-function requestFullscreen() {
-  if (canvas.requestFullscreen) canvas.requestFullscreen();
-  else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
-}
+gameLoop();
