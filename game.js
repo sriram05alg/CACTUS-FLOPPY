@@ -61,6 +61,7 @@ for (let i = 0; i < 100; i++) {
 }
 
 // Coin properties
+// Coin properties
 let coin = {
   x: canvas.width + 500,
   y: Math.random() * (canvas.height - 100) + 50,
@@ -68,6 +69,7 @@ let coin = {
   height: 75,
   speed: 2
 };
+
 
 // Funny comments
 const funnyComments = [
@@ -120,28 +122,22 @@ function resetGame() {
   backgroundMusic.play();
 }
 
-// Controls (For mobile and desktop)
-function controlBird(event) {
-  if (event.type === 'keydown' && event.key === ' ') {
-    velocity = lift;
-  } else if (event.type === 'touchstart') {
+// Controls
+window.addEventListener('keydown', function (event) {
+  if (event.key === ' ') {
     velocity = lift;
   }
-}
-
-// Add event listeners for both mobile and desktop
-window.addEventListener('keydown', controlBird); // For desktop (keyboard)
-window.addEventListener('touchstart', controlBird); // For mobile (touch)
-
-// Prevent default behavior on mobile (e.g., scrolling)
-window.addEventListener('touchstart', function(event) {
-  event.preventDefault();
-}, { passive: false });
+});
 
 // Restart
 document.getElementById('restartBtn').addEventListener('click', () => {
   resetGame();
 });
+document.getElementById('restartBtn').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  resetGame();
+});
+
 
 // Update game
 function update() {
@@ -311,25 +307,57 @@ function draw() {
   ctx.fillRect(10, 130, 250, 80);
   ctx.fillStyle = 'black';
   ctx.font = '20px Times New Roman';
-  ctx.fillText(`Badge: ${latestBadge}`, 30, 170);
+  ctx.fillText('Badge:', 30, 160);
+  ctx.font = '18px Times New Roman';
+  ctx.fillText(latestBadge, 30, 190);
 
-  // Funny Comment Box
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-  ctx.fillRect(canvas.width / 2 - 150, 10, 300, 60);
+  // Funny comment box (right side)
+  ctx.fillStyle = 'rgba(255,182,193,0.8)';
+  ctx.fillRect(canvas.width - 410, 10, 400, 100);
   ctx.fillStyle = 'black';
-  ctx.font = '16px Arial';
-  ctx.fillText(currentFunnyComment, canvas.width / 2 - 140, 40);
+  ctx.font = '20px Times New Roman';
+  ctx.fillText('Funny Comment:', canvas.width - 390, 40);
+  ctx.font = '18px Times New Roman';
+  ctx.fillText(currentFunnyComment, canvas.width - 390, 80);
+
+  if (gameOver) {
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Times New Roman';
+    ctx.fillText('Game Over!', canvas.width / 2 - 150, canvas.height / 2);
+    ctx.font = '36px Times New Roman';
+    ctx.fillText(`High Score: ${highScore}`, canvas.width / 2 - 140, canvas.height / 2 + 50);
+  }
 }
 
-// Game loop
+const startBtn = document.getElementById('startBtn');
+startBtn.addEventListener('click', startGame);
+startBtn.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  startGame();
+});
+
+function startGame() {
+  // Hide the start button and reset game state, then enter the game loop
+  resetGame();
+  document.getElementById('startBtn').style.display = 'none';
+  gameLoop();
+}
+
+// **Game loop and resize handler**
 function gameLoop() {
   update();
   draw();
   requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+// Resize handler (keeps canvas full-screen)
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  birdX = canvas.width / 3;
+});
 
-
-
-
+function requestFullscreen() {
+  if (canvas.requestFullscreen) canvas.requestFullscreen();
+  else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+}
